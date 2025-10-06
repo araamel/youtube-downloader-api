@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>YouDownloader</title>
+    <style>
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 25px;
+            border: 1px solid #e1e1e1;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Importante para el padding */
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: #d10000; }
+        #status {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .success { color: #28a745; background-color: #e9f7ec; }
+        .error { color: #dc3545; background-color: #fce8e6; }
+    </style>
+</head>
+<body>
+    <h1>YouDownloader</h1>
+    
+    <label for="videoUrl">URL del Video:</label>
+    <input type="text" id="videoUrl" placeholder="Pega la URL de YouTube aquí">
+
+    <label for="format">Elige el formato:</label>
+    <select id="format">
+        <option value="mp4">Video (MP4)</option>
+        <option value="mp3">Audio (MP3)</option>
+    </select>
+
+    <button id="downloadBtn">Descargar</button>
+
+    <p id="status"></p> <script>
+        const urlInput = document.getElementById('videoUrl');
+        const formatSelect = document.getElementById('format');
+        const downloadButton = document.getElementById('downloadBtn');
+        const statusDiv = document.getElementById('status');
+
+        downloadButton.addEventListener('click', () => {
+            const videoUrl = urlInput.value;
+            const format = formatSelect.value;
+
+            if (!videoUrl) {
+                alert('Por favor, ingresa una URL de YouTube.');
+                return;
+            }
+
+            statusDiv.textContent = 'Procesando, por favor espera... Esto puede tardar.';
+            statusDiv.className = '';
+            downloadButton.disabled = true;
+
+            // URL actualizada para apuntar a la API en Render
+            fetch('https://youtube-downloader-api-75uv.onrender.com/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: videoUrl,
+                    format: format
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    statusDiv.textContent = `Error: ${data.error}`;
+                    statusDiv.className = 'error';
+                } else {
+                    statusDiv.textContent = `¡Éxito! ${data.message}`;
+                    statusDiv.className = 'success';
+                }
+            })
+            .catch(error => {
+                console.error('Error de conexión:', error);
+                statusDiv.textContent = 'Error de conexión con el servidor.';
+                statusDiv.className = 'error';
+            })
+            .finally(() => {
+                downloadButton.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

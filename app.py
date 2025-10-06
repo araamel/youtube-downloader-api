@@ -23,6 +23,7 @@ def download():
             ydl_opts = {
                 'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
                 'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
+                'cookiefile': 'cookies.txt',
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(video_url, download=True)
@@ -34,6 +35,7 @@ def download():
             ydl_opts = {
                 'format': 'bestaudio/best',
                 'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
+                'cookiefile': 'cookies.txt',
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
