@@ -2,21 +2,28 @@ import yt_dlp
 from flask import Flask, request, jsonify
 import os
 
-app = Flask(__name__)
-DOWNLOAD_DIR = 'downloads'
-
 @app.route('/download', methods=['POST'])
 def download():
+    print("--- INICIANDO PETICIÓN DE DESCARGA ---") # MENSAJE NUEVO
+    cookie_path = 'cookies.txt'
+
+    # --- CÓDIGO DE DIAGNÓSTICO ---
+    if os.path.exists(cookie_path):
+        print(f"Diagnóstico: El archivo '{cookie_path}' SÍ fue encontrado por la API.")
+    else:
+        print(f"Diagnóstico: ¡ERROR! El archivo '{cookie_path}' NO fue encontrado.")
+    # --- FIN DEL CÓDIGO DE DIAGNÓSTICO ---
+
     data = request.get_json()
     video_url = data.get('url')
     output_format = data.get('format', 'mp4')
 
     if not video_url:
+        print("Error: No se recibió URL.") # MENSAJE NUEVO
         return jsonify({"error": "La URL del video es requerida"}), 400
 
     try:
-        if not os.path.exists(DOWNLOAD_DIR):
-            os.makedirs(DOWNLOAD_DIR)
+        print(f"Iniciando descarga para la URL: {video_url}") # MENSAJE NUEVO
 
         # Opciones para descargar video MP4
         if output_format == 'mp4':
